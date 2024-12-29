@@ -6324,6 +6324,10 @@ addcmd('clraliases',{},function(args, speaker)
 	refreshaliases()
 end)
 
+addcmd('about', {'creator', 'founder'}, function(args, speaker)
+	notify('About DarkSigil', 'DarkSigil was developed\nby Mali.\nDarkSigil is a commandline executor for many Roblox games.\nCurrent Version: 1.83\nDiscord: Official.Mali')
+end)
+
 addcmd('discord', {'support', 'help'}, function(args, speaker)
 	if everyClipboard then
 		toClipboard('https://discord.com/invite/hmPTGXKvSk')
