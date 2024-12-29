@@ -6326,7 +6326,7 @@ addcmd('clraliases',{},function(args, speaker)
 end)
 
 addcmd('about', {'creator', 'founder'}, function(args, speaker)
-	notify('About DarkSigil', 'DarkSigil was developed\nby Mali.\nDarkSigil is a commandline executor for many Roblox games.\nCurrent Version: 1.83\nDiscord: Official.Mali')
+	notify('About DarkSigil', 'DarkSigil was Developed by\nDiscord: official.mali\nCurrent Version: 1.83')
 end)
 
 addcmd('discord', {'support', 'help'}, function(args, speaker)
