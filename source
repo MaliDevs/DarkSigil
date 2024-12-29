@@ -6279,7 +6279,7 @@ local TeleportCheck = false
 Players.LocalPlayer.OnTeleport:Connect(function(State)
 	if KeepDarkSigil and (not TeleportCheck) and queueteleport then
 		TeleportCheck = true
-		queueteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/MaliDevs/DarkSigil/master/source'))()")
+		queueteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/MaliDevs/DarkSigil/refs/heads/master/source'))()")
 	end
 end)
 
@@ -8593,7 +8593,7 @@ addcmd("promptr15", {}, function(args, speaker)
 end)
 
 addcmd("wallwalk", {"walkonwalls"}, function(args, speaker)
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/MaliDevs/master/backup/wallwalker.lua"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/MaliDevs/DarkSigil/refs/heads/master/backup/wallwalker.lua"))()
 end)
 
 addcmd('age',{},function(args, speaker)
@@ -10149,7 +10149,7 @@ addcmd('oldconsole',{},function(args, speaker)
 	-- Thanks wally!!
 	notify("Loading",'Hold on a sec')
 	local _, str = pcall(function()
-		return game:HttpGet("https://raw.githubusercontent.com/MaliDevs/master/backup/console.lua", true)
+		return game:HttpGet("https://raw.githubusercontent.com/MaliDevs/DarkSigil/refs/heads/master/backup/console.lua", true)
 	end)
 
 	local s, e = loadstring(str)
@@ -10171,7 +10171,7 @@ end)
 
 addcmd('explorer', {'dex'}, function(args, speaker)
 	notify('Loading', 'Hold on a sec')
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/MaliDevs/master/backup/dex.lua"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/MaliDevs/DarkSigil/refs/heads/master/backup/dex.lua"))()
 end)
 
 addcmd('olddex', {'odex'}, function(args, speaker)
@@ -10258,12 +10258,12 @@ addcmd('remotespy',{'rspy'},function(args, speaker)
 	notify("Loading",'Hold on a sec')
 	-- Full credit to exx, creator of SimpleSpy
 	-- also thanks to NoobSploit for fixing
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/MaliDevs/master/backup/SimpleSpyV3/main.lua"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/MaliDevs/DarkSigil/refs/heads/master/backup/SimpleSpyV3/main.lua"))()
 end)
 
 addcmd('audiologger',{'alogger'},function(args, speaker)
 	notify("Loading",'Hold on a sec')
-	loadstring(game:HttpGet(('https://raw.githubusercontent.com/MaliDevs/master/backup/audiologger.lua'),true))()
+	loadstring(game:HttpGet(('https://raw.githubusercontent.com/MaliDevs/DarkSigil/refs/heads/master/backup/audiologger.lua'),true))()
 end)
 
 local loopgoto = nil
@@ -12675,7 +12675,7 @@ DSMouse.Move:Connect(checkTT)
 
 task.spawn(function()
 	local success, latestVersionInfo = pcall(function() 
-		local versionJson = game:HttpGet('https://raw.githubusercontent.com/MaliDevs/DarkSigil/master/version')
+		local versionJson = game:HttpGet('https://raw.githubusercontent.com/MaliDevs/DarkSigil/refs/heads/master/version')
 		return HttpService:JSONDecode(versionJson)
 	end)
 
