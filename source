@@ -11876,78 +11876,33 @@ addcmd('spin',{},function(args, speaker)
 end)
 
 addcmd('spacespin',{},function(args, speaker)
--- Get the player's character
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-
--- Sit the character
-character:FindFirstChildWhichIsA("Humanoid").Sit = true
-
--- Set gravity to 0
+speaker.Character:FindFirstChildWhichIsA("Humanoid").Sit = true
 workspace.Gravity = 0
+local spinSpeed = .5
+if args[1] and isNumber(args[1]) then
+    spinSpeed = args[1]
+end
+for i,v in pairs(getRoot(speaker.Character):GetChildren()) do
+    if v.Name == "Spinning" then
+        v:Destroy()
+    end
+end
+local Spin = Instance.new("BodyAngularVelocity")
+Spin.Name = "Spinning"
+Spin.Parent = getRoot(speaker.Character)
+Spin.MaxTorque = Vector3.new(0, math.huge, 0)
+Spin.AngularVelocity = Vector3.new(0,spinSpeed,0)
+end)
 
-local spinSpeed = 10
-
-	if args[1] and isNumber(args[1]) then
-		spinSpeed = args[1]
-	end
+addcmd('unspacespin', {}, function(args, speaker)
+    speaker.Character:FindFirstChildWhichIsA("Humanoid").Sit = false
+    workspace.Gravity = 196.2
 	for i,v in pairs(getRoot(speaker.Character):GetChildren()) do
 		if v.Name == "Spinning" then
 			v:Destroy()
 		end
 	end
-	local Spin = Instance.new("BodyAngularVelocity")
-	Spin.Name = "Spinning"
-	Spin.Parent = getRoot(speaker.Character)
-	Spin.MaxTorque = Vector3.new(0, math.huge, 0)
-	Spin.AngularVelocity = Vector3.new(0,spinSpeed,0)
-
 end)
-
-addcmd('unspacespin', {}, function(args, speaker)
-    -- Get the player's character
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:FindFirstChildWhichIsA("Humanoid")
-    
-    -- Reset gravity to default
-    workspace.Gravity = 196.2
-    
-    -- Wait to allow gravity to be reset
-    wait(1)
-    
-    -- Make the character stop sitting (ensure humanoid exists)
-    if humanoid then
-        humanoid.Sit = false
-    end
-    
-    -- Wait to ensure the humanoid stops sitting
-    wait(1)
-    
-    -- Remove the spinning force
-    for _, v in pairs(character:GetChildren()) do
-        if v.Name == "Spinning" then
-            v:Destroy()
-        end
-    end
-    
-    -- Ensure character is not anchored or prevented from moving (if changed during spin)
-    local rootPart = character:FindFirstChild("HumanoidRootPart")
-    if rootPart then
-        rootPart.Anchored = false
-    end
-    
-    -- Make sure the character can move again
-    if humanoid then
-        humanoid.PlatformStand = false
-    end
-    
-    -- Wait to fully reset (optional)
-    wait(1)
-end)
-
-
-
 addcmd('unspin',{},function(args, speaker)
 	for i,v in pairs(getRoot(speaker.Character):GetChildren()) do
 		if v.Name == "Spinning" then
