@@ -4626,6 +4626,8 @@ CMDs[#CMDs + 1] = {NAME = 'unweaken', DESC = 'Sets your characters CustomPhysica
 CMDs[#CMDs + 1] = {NAME = 'strengthen [num]', DESC = 'Makes your character more dense (CustomPhysicalProperties)'}
 CMDs[#CMDs + 1] = {NAME = 'unstrengthen', DESC = 'Sets your characters CustomPhysicalProperties to default'}
 CMDs[#CMDs + 1] = {NAME = 'breakvelocity', DESC = 'Sets your characters velocity to 0'}
+CMDs[#CMDs + 1] = {NAME = 'spacespin [speed]', DESC = 'Spacespins your character'}
+CMDs[#CMDs + 1] = {NAME = 'unspacespin', DESC = 'Disables spacespin'}
 CMDs[#CMDs + 1] = {NAME = 'spin [speed]', DESC = 'Spins your character'}
 CMDs[#CMDs + 1] = {NAME = 'unspin', DESC = 'Disables spin'}
 CMDs[#CMDs + 1] = {NAME = 'split', DESC = 'Splits your character in half'}
@@ -11871,6 +11873,45 @@ addcmd('spin',{},function(args, speaker)
 	Spin.Parent = getRoot(speaker.Character)
 	Spin.MaxTorque = Vector3.new(0, math.huge, 0)
 	Spin.AngularVelocity = Vector3.new(0,spinSpeed,0)
+end)
+
+addcmd('spacespin',{},function(args, speaker)
+-- Get the player's character
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Sit the character
+character:FindFirstChildWhichIsA("Humanoid").Sit = true
+
+-- Set gravity to 0
+workspace.Gravity = 0
+
+local spinSpeed = 10
+
+	if args[1] and isNumber(args[1]) then
+		spinSpeed = args[1]
+	end
+	for i,v in pairs(getRoot(speaker.Character):GetChildren()) do
+		if v.Name == "Spinning" then
+			v:Destroy()
+		end
+	end
+	local Spin = Instance.new("BodyAngularVelocity")
+	Spin.Name = "Spinning"
+	Spin.Parent = getRoot(speaker.Character)
+	Spin.MaxTorque = Vector3.new(0, math.huge, 0)
+	Spin.AngularVelocity = Vector3.new(0,spinSpeed,0)
+
+end)
+
+addcmd('unspacespin', {},function(args, speaker)
+workspace.Gravity = 196.2 -- Default gravity
+character:FindFirstChildWhichIsA("Humanoid").Sit = false
+for i,v in pairs(getRoot(speaker.Character):GetChildren()) do
+    if v.Name == "Spinning" then
+        v:Destroy()
+    end
+end
 end)
 
 addcmd('unspin',{},function(args, speaker)
