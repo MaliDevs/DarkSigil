@@ -11905,17 +11905,40 @@ local spinSpeed = 10
 end)
 
 addcmd('unspacespin', {},function(args, speaker)
-workspace.Gravity = 196.2 -- Default gravity
-wait(1)
-character:FindFirstChildWhichIsA("Humanoid").Sit = false
-wait(1)
-for i,v in pairs(getRoot(speaker.Character):GetChildren()) do
-    if v.Name == "Spinning" then
-        v:Destroy()
+    -- Reset gravity to default
+    workspace.Gravity = 196.2
+
+    -- Wait to allow gravity to be reset
+    wait(1)
+
+    -- Make the character stop sitting
+    local humanoid = character:FindFirstChildWhichIsA("Humanoid")
+    if humanoid then
+        humanoid.Sit = false
     end
-end
-wait(1)
+
+    -- Wait to ensure the humanoid stops sitting
+    wait(1)
+
+    -- Remove the spinning force
+    for i,v in pairs(getRoot(speaker.Character):GetChildren()) do
+        if v.Name == "Spinning" then
+            v:Destroy()
+        end
+    end
+
+    -- Additional reset: make sure character is in normal state (optional)
+    local body = getRoot(speaker.Character)
+    if body then
+        -- Reset orientation or other properties if needed
+        body.Anchored = false
+        body.CanCollide = true
+    end
+
+    -- Wait to fully reset
+    wait(1)
 end)
+
 
 addcmd('unspin',{},function(args, speaker)
 	for i,v in pairs(getRoot(speaker.Character):GetChildren()) do
