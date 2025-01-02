@@ -11906,12 +11906,15 @@ end)
 
 addcmd('unspacespin', {},function(args, speaker)
 workspace.Gravity = 196.2 -- Default gravity
+wait(1)
 character:FindFirstChildWhichIsA("Humanoid").Sit = false
+wait(1)
 for i,v in pairs(getRoot(speaker.Character):GetChildren()) do
     if v.Name == "Spinning" then
         v:Destroy()
     end
 end
+wait(1)
 end)
 
 addcmd('unspin',{},function(args, speaker)
