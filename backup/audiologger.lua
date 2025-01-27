@@ -1,4 +1,4 @@
--- https://github.com/MaliDevs
+-- https://github.com/EdgeIY
 
 aa = game:GetObjects("rbxassetid://01997056190")[1]
 aa.Parent = game.CoreGui
