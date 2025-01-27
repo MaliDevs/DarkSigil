@@ -5,4 +5,4 @@ if ran then
     pcall(writefile, "backup_" .. filename, file) -- backup the corrupted save just in case
 end
 writefile(filename, default) -- overwrite the original
-loadstring(game:HttpGet("https://raw.githubusercontent.com/MaliDevs/DarkSigil/refs/heads/master/source"))() -- run the ds loadstring
+loadstring(game:HttpGet("https://raw.githubusercontent.com/MaliDevs/DarkSigil/master/source"))() -- run the ds loadstring
