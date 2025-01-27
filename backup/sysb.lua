@@ -1840,21 +1840,6 @@ CMDX_Button.TextScaled = true
 CMDX_Button.TextSize = 14.000
 CMDX_Button.TextWrapped = true
 
-FreeEmotes_Button.Name = "FreeEmotes_Button"
-FreeEmotes_Button.Parent = Misc_Section
-FreeEmotes_Button.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
-FreeEmotes_Button.BackgroundTransparency = 0.500
-FreeEmotes_Button.BorderColor3 = Color3.fromRGB(0, 0, 0)
-FreeEmotes_Button.BorderSizePixel = 0
-FreeEmotes_Button.Position = UDim2.new(0, 210, 0, 225)
-FreeEmotes_Button.Size = UDim2.new(0, 150, 0, 30)
-FreeEmotes_Button.Font = Enum.Font.Oswald
-FreeEmotes_Button.Text = "Free emotes"
-FreeEmotes_Button.TextColor3 = Color3.fromRGB(0, 0, 0)
-FreeEmotes_Button.TextScaled = true
-FreeEmotes_Button.TextSize = 14.000
-FreeEmotes_Button.TextWrapped = true
-
 Serverhop_Button.Name = "Serverhop_Button"
 Serverhop_Button.Parent = Misc_Section
 Serverhop_Button.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
@@ -3435,14 +3420,6 @@ Explode_Button.MouseButton1Click:Connect(function()
 	bav.AngularVelocity = Vector3.new(0,150,0)
 	task.wait(3)
 	plr.Character.Humanoid:ChangeState(15)
-end)
-
-FreeEmotes_Button.MouseButton1Click:Connect(function()
-	if not FreeEmotesEnabled then
-		FreeEmotesEnabled = true
-		SendNotify("System Broken","Loading free emotes.\nCredits: Gi#7331")
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/H20CalibreYT/SystemBroken/main/AllEmotes"))()
-	end
 end)
 
 Rejoin_Button.MouseButton1Click:Connect(function()
