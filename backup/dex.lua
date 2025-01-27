@@ -4,8 +4,8 @@
 	New Dex
 	Final Version
 	Developed by Moon
-	Modified for Infinite Yield
-	
+	Modified for DarkSigil
+
 	Dex is a debugging suite designed to help the user debug games and find any potential vulnerabilities.
 ]]
 
@@ -14,11 +14,17 @@ local selection
 local cloneref = cloneref or function(...) return ... end
 
 local service = setmetatable({}, {
-    __index = function(self, name)
-        self[name] = cloneref(game:GetService(name))
-        return self[name]
-    end
+	__index = function(self, name)
+		self[name] = cloneref(game:GetService(name))
+		return self[name]
+	end
 })
+
+-- prevent environment implosion from references
+-- mainly from the executor not having some game properties in their game variable
+-- so we gotta use vanilla game
+local oldgame = game
+local game = workspace.Parent
 
 local EmbeddedModules = {
 	Explorer = function()
@@ -1297,7 +1303,7 @@ local EmbeddedModules = {
 					end
 				end})
 
-                -- this code is very bad but im lazy and it works so cope
+				-- this code is very bad but im lazy and it works so cope
 				local clth = function(str)
 					if str:sub(1, 28) == "game:GetService(\"Workspace\")" then str = str:gsub("game:GetService%(\"Workspace\"%)", "workspace", 1) end
 					if str:sub(1, 27 + #plr.Name) == "game:GetService(\"Players\")." .. plr.Name then str = str:gsub("game:GetService%(\"Players\"%)." .. plr.Name, "game:GetService(\"Players\").LocalPlayer", 1) end
@@ -4824,7 +4830,7 @@ local EmbeddedModules = {
 			Lib.FetchCustomAsset = function(url,filepath)
 				if not env.writefile then return end
 
-				local s,data = pcall(game.HttpGet,game,url)
+				local s,data = pcall(oldgame.HttpGet,game,url)
 				if not s then return end
 
 				env.writefile(filepath,data)
@@ -7148,14 +7154,14 @@ local EmbeddedModules = {
 					["&"] = "&amp;"
 				}
 
-				local tabSub = "\205"
-				local tabReplacement = (" %s%s "):format(tabSub,tabSub)
+				local tabSub = "\t"
+				local tabReplacement = (" %s "):format(tabSub)
 
 				local tabJumps = {
-					[("[^%s] %s"):format(tabSub,tabSub)] = 0,
-					[(" %s%s"):format(tabSub,tabSub)] = -1,
-					[("%s%s "):format(tabSub,tabSub)] = 2,
-					[("%s [^%s]"):format(tabSub,tabSub)] = 1,
+					[("[^%s] "):format(tabSub)] = 0,
+					[(" %s"):format(tabSub)] = -1,
+					[("%s "):format(tabSub)] = 2,
+					[(" [^%s]"):format(tabSub)] = 1,
 				}
 
 				local tweenService = service.TweenService
@@ -8189,9 +8195,9 @@ local EmbeddedModules = {
 
 				funcs.ConvertText = function(self,text,toEditor)
 					if toEditor then
-						return text:gsub("\t",(" %s%s "):format(tabSub,tabSub))
+						return text:gsub("\t",(" %s "):format(tabSub))
 					else
-						return text:gsub((" %s%s "):format(tabSub,tabSub),"\t")
+						return text:gsub((" %s "):format(tabSub),"\t")
 					end
 				end
 
@@ -10638,9 +10644,9 @@ Main = (function()
 		env.loadfile = loadfile
 		env.movefileas = movefileas
 		env.saveinstance = saveinstance
-        env.parsefile = function(name)
-            return tostring(name):gsub("[*\\?:<>|]+", ""):sub(1, 175)
-        end
+		env.parsefile = function(name)
+			return tostring(name):gsub("[*\\?:<>|]+", ""):sub(1, 175)
+		end
 
 		-- debug
 		env.getupvalues = (debug and debug.getupvalues) or getupvalues or getupvals
@@ -10656,17 +10662,19 @@ Main = (function()
 		-- other
 		--env.setfflag = setfflag
 		env.request = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
-        env.decompile = decompile or (env.getscriptbytecode and (function()
-            local success, err = pcall(function()
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/refs/heads/main/AdvancedDecompilerV3/init.lua"))()
-            end)
+		-- hmm yes sanity check hmm fake decompile good
+		env.safeDecompile = type(decompile) == "function" and decompile
+		env.decompile = env.safeDecompile or (env.getscriptbytecode and env.request and (function()
+			local success, err = pcall(function()
+				loadstring(oldgame:HttpGet("https://raw.githubusercontent.com/MaliDevs/DarkSigil/refs/heads/master/backup/konstant.lua"))()
+			end)
 
-            return (success and decompile) or nil
-        end)())
+			return (success and decompile) or nil
+		end)())
 		env.protectgui = protect_gui or (syn and syn.protect_gui)
 		env.gethui = gethui or get_hidden_gui
 		env.setclipboard = setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set)
-		env.getnilinstances = getnilinstances or get_nil_instances or function() return {} end
+		env.getnilinstances = getnilinstances or get_nil_instances
 		env.getloadedmodules = getloadedmodules
 
 		-- if identifyexecutor and type(identifyexecutor) == "function" then Main.Executor = identifyexecutor() end
@@ -10720,7 +10728,7 @@ Main = (function()
 					Main.DepsVersionData[1] = ""
 				end
 			end
-			rawAPI = rawAPI or game:HttpGet("http://setup.roblox.com/"..Main.RobloxVersion.."-API-Dump.json")
+			rawAPI = rawAPI or oldgame:HttpGet("http://setup.roblox.com/"..Main.RobloxVersion.."-API-Dump.json")
 		else
 			if script:FindFirstChild("API") then
 				rawAPI = require(script.API)
@@ -10868,7 +10876,7 @@ Main = (function()
 					Main.DepsVersionData[1] = ""
 				end
 			end
-			rawXML = rawXML or game:HttpGet("https://raw.githubusercontent.com/CloneTrooper1019/Roblox-Client-Tracker/roblox/ReflectionMetadata.xml")
+			rawXML = rawXML or oldgame:HttpGet("https://raw.githubusercontent.com/CloneTrooper1019/Roblox-Client-Tracker/roblox/ReflectionMetadata.xml")
 		else
 			if script:FindFirstChild("RMD") then
 				rawXML = require(script.RMD)
@@ -11414,7 +11422,7 @@ Main = (function()
 					Main.RobloxVersion = Main.DepsVersionData[2]
 				end
 			end
-			Main.RobloxVersion = Main.RobloxVersion or game:HttpGet("http://setup.roblox.com/versionQTStudio")
+			Main.RobloxVersion = Main.RobloxVersion or oldgame:HttpGet("http://setup.roblox.com/versionQTStudio")
 		end
 
 		-- Fetch external deps
