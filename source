@@ -6370,6 +6370,31 @@ addcmd('adonis', {}, function(args, speaker)
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/MaliDevs/DarkSigil/refs/heads/master/backup/adonis.lua",true))()
 end)
 
+addcmd('poke', {}, function(args, speaker)
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/MaliDevs/DarkSigil/refs/heads/master/backup/adonis.lua",true))()
+	wait(1)
+	if not hookmetamethod then 
+		return notify('Incompatible Exploit','Your exploit does not support this command (missing hookmetamethod)')
+	end
+	local LocalPlayer = Players.LocalPlayer
+	local oldhmmi
+	local oldhmmnc
+	oldhmmi = hookmetamethod(game, "__index", function(self, method)
+		if self == LocalPlayer and method:lower() == "kick" then
+			return error("Expected ':' not '.' calling member function Kick", 2)
+		end
+		return oldhmmi(self, method)
+	end)
+	oldhmmnc = hookmetamethod(game, "__namecall", function(self, ...)
+		if self == LocalPlayer and getnamecallmethod():lower() == "kick" then
+			return
+		end
+		return oldhmmnc(self, ...)
+	end)
+
+	notify('Client Antikick','Client anti kick is now active (only effective on localscript kick)')
+end)
+
 addcmd('sysbroken', {'sysb'}, function(args, speaker)
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/MaliDevs/DarkSigil/refs/heads/master/backup/sysb.lua"))()
 end)
