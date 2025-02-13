@@ -4323,6 +4323,7 @@ end
 
 CMDs = {}
 CMDs[#CMDs + 1] = {NAME = 'about / founder / creator', DESC = 'DarkSigils about me page'}
+CMDs[#CMDs + 1] = {NAME = 'poke', DESC = 'An anticheat bypass/Antikick specific for Poke Haven.'}
 CMDs[#CMDs + 1] = {NAME = 'adonis', DESC = 'An anticheat bypass'}
 CMDs[#CMDs + 1] = {NAME = 'sysbroken / sysb', DESC = 'Opens an updated SystemBroken menu by Mali'}
 CMDs[#CMDs + 1] = {NAME = 'console', DESC = 'Loads Roblox console'}
