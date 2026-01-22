@@ -10361,90 +10361,35 @@ addcmd('unloopgoto',{'noloopgoto'},function(args, speaker)
 	loopgoto = nil
 end)
 
-addcmd("headsit", {}, function(args, speaker)
-    local results = getPlayer(args[1], speaker)
-    if not results then return end
+addcmd('headsit',{},function(args, speaker)
+	local players = getPlayer(args[1], speaker)
+	if headSit then headSit:Disconnect() end
 
-    -- Pick first valid target from getPlayer() results
-    local target
-    for _, v in pairs(results) do
-        if typeof(v) == "Instance" and v:IsA("Player") then
-            target = v
-            break
-        elseif typeof(v) == "string" then
-            local p = Players:FindFirstChild(v)
-            if p and p:IsA("Player") then
-                target = p
-                break
-            end
-        end
-    end
-    if not target then return end
+	for i,v in pairs(players) do
+		speaker.Character:FindFirstChildOfClass('Humanoid').Sit = true
 
-    if headSit then headSit:Disconnect(); headSit = nil end
+		headSit = RunService.Stepped:Connect(function()
+			if Players:FindFirstChild(Players[v].Name)
+				and Players[v].Character ~= nil
+				and getRoot(Players[v].Character)
+				and getRoot(speaker.Character)
+				and speaker.Character:FindFirstChildOfClass('Humanoid').Sit == true
+			then
+				local sRoot = getRoot(speaker.Character)
+				local tRoot = getRoot(Players[v].Character)
 
-    local function getHum(plr)
-        local ch = plr and plr.Character
-        return ch and ch:FindFirstChildOfClass("Humanoid")
-    end
+				sRoot.CFrame =
+					tRoot.CFrame
+					* CFrame.new(0, 1.6, 0.4)
 
-    local function getHead(plr)
-        local ch = plr and plr.Character
-        return ch and ch:FindFirstChild("Head")
-    end
-
-    local function getRootSafe(plr)
-        local ch = plr and plr.Character
-        return ch and getRoot(ch) -- uses your existing getRoot(character)
-    end
-
-    local function ensureBreakVelocity(root)
-        if not root then return end
-        if not root:FindFirstChild("BreakVelocity") then
-            local v = Velocity_Asset:Clone()
-            v.Name = "BreakVelocity" -- IMPORTANT so your checks match
-            v.Parent = root
-        end
-    end
-
-    local hum = getHum(speaker)
-    if hum then hum.Sit = true end
-
-    -- Stepped runs before physics, reduces fling vs Heartbeat
-    headSit = RunService.Stepped:Connect(function()
-        local sHum = getHum(speaker)
-        local sRoot = getRootSafe(speaker)
-        local tHead = getHead(target)
-
-        if target.Parent ~= Players
-            or not sHum
-            or not sRoot
-            or not tHead
-        then
-            if headSit then headSit:Disconnect(); headSit = nil end
-            if sRoot and sRoot:FindFirstChild("BreakVelocity") then
-                sRoot.BreakVelocity:Destroy()
-            end
-            return
-        end
-
-        -- Keep sitting (some games unset Sit automatically)
-        sHum.Sit = true
-
-        ensureBreakVelocity(sRoot)
-
-        -- Sit on head
-        sRoot.CFrame = tHead.CFrame * CFrame.new(0, 2, 0)
-
-        -- Kill fling energy every frame
-        if sRoot.AssemblyLinearVelocity then
-            sRoot.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-            sRoot.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
-        else
-            sRoot.Velocity = Vector3.new(0, 0, 0)
-            sRoot.RotVelocity = Vector3.new(0, 0, 0)
-        end
-    end)
+				-- THIS is what stops the launch
+				sRoot.Velocity = Vector3.new(0, 0, 0)
+				sRoot.RotVelocity = Vector3.new(0, 0, 0)
+			else
+				headSit:Disconnect()
+			end
+		end)
+	end
 end)
 
 addcmd('chat',{'say'},function(args, speaker)
