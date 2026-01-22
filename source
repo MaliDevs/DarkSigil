@@ -17,7 +17,7 @@ if not game:IsLoaded() then
     notLoaded:Destroy()
 end
 
-currentVersion = "2.6"
+currentVersion = "2.7"
 
 Holder = Instance.new("Frame")
 Title = Instance.new("TextLabel")
@@ -10361,19 +10361,77 @@ addcmd('unloopgoto',{'noloopgoto'},function(args, speaker)
 	loopgoto = nil
 end)
 
-addcmd('headsit',{},function(args, speaker)
-	local players = getPlayer(args[1], speaker)
-	if headSit then headSit:Disconnect() end
-	for i,v in pairs(players)do
-		speaker.Character:FindFirstChildOfClass('Humanoid').Sit = true
-		headSit = RunService.Heartbeat:Connect(function()
-			if Players:FindFirstChild(Players[v].Name) and Players[v].Character ~= nil and getRoot(Players[v].Character) and getRoot(speaker.Character) and speaker.Character:FindFirstChildOfClass('Humanoid').Sit == true then
-				getRoot(speaker.Character).CFrame = getRoot(Players[v].Character).CFrame * CFrame.Angles(0,math.rad(0),0)* CFrame.new(0,1.6,0.4)
-			else
-				headSit:Disconnect()
-			end
-		end)
-	end
+addcmd('headsit', {}, function(args, speaker)
+    local list = getPlayer(args[1], speaker)
+    local target = list and list[1]
+    if not target then return end
+
+    if headSit then headSit:Disconnect(); headSit = nil end
+
+    local function getHum(plr)
+        local ch = plr and plr.Character
+        return ch and ch:FindFirstChildOfClass("Humanoid")
+    end
+
+    local function getHead(plr)
+        local ch = plr and plr.Character
+        return ch and ch:FindFirstChild("Head")
+    end
+
+    local function ensureBreakVelocity(root)
+        if not root then return end
+        if not root:FindFirstChild("BreakVelocity") then
+            local ok, temp = pcall(function()
+                local v = Velocity_Asset:Clone()
+                v.Name = "BreakVelocity" -- IMPORTANT: match the name you check for
+                v.Parent = root
+                return v
+            end)
+        end
+    end
+
+    local speakerHum = getHum(speaker)
+    if speakerHum then speakerHum.Sit = true end
+
+    -- Use Stepped so we move BEFORE physics resolves contacts
+    headSit = RunService.Stepped:Connect(function()
+        local sChar = speaker.Character
+        local tChar = target.Character
+        local sRoot = sChar and getRoot(sChar)
+        local tHead = getHead(target)
+
+        local hum = getHum(speaker)
+
+        if target.Parent ~= Players
+            or not tChar
+            or not sChar
+            or not sRoot
+            or not tHead
+            or not hum
+            or hum.Sit ~= true
+        then
+            if headSit then headSit:Disconnect(); headSit = nil end
+            if sRoot and sRoot:FindFirstChild("BreakVelocity") then
+                sRoot.BreakVelocity:Destroy()
+            end
+            return
+        end
+
+        ensureBreakVelocity(sRoot)
+
+        -- Sit on head (offset like their script)
+        sRoot.CFrame = tHead.CFrame * CFrame.new(0, 2, 0)
+
+        -- Kill fling energy every frame
+        if sRoot.AssemblyLinearVelocity then
+            sRoot.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+            sRoot.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+        else
+            -- fallback for older behavior
+            sRoot.Velocity = Vector3.new(0, 0, 0)
+            sRoot.RotVelocity = Vector3.new(0, 0, 0)
+        end
+    end)
 end)
 
 addcmd('chat',{'say'},function(args, speaker)
