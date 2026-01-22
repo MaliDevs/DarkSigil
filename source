@@ -10361,9 +10361,24 @@ addcmd('unloopgoto',{'noloopgoto'},function(args, speaker)
 	loopgoto = nil
 end)
 
-addcmd('headsit', {}, function(args, speaker)
-    local list = getPlayer(args[1], speaker)
-    local target = list and list[1]
+addcmd("headsit", {}, function(args, speaker)
+    local results = getPlayer(args[1], speaker)
+    if not results then return end
+
+    -- Pick first valid target from getPlayer() results
+    local target
+    for _, v in pairs(results) do
+        if typeof(v) == "Instance" and v:IsA("Player") then
+            target = v
+            break
+        elseif typeof(v) == "string" then
+            local p = Players:FindFirstChild(v)
+            if p and p:IsA("Player") then
+                target = p
+                break
+            end
+        end
+    end
     if not target then return end
 
     if headSit then headSit:Disconnect(); headSit = nil end
@@ -10378,37 +10393,33 @@ addcmd('headsit', {}, function(args, speaker)
         return ch and ch:FindFirstChild("Head")
     end
 
+    local function getRootSafe(plr)
+        local ch = plr and plr.Character
+        return ch and getRoot(ch) -- uses your existing getRoot(character)
+    end
+
     local function ensureBreakVelocity(root)
         if not root then return end
         if not root:FindFirstChild("BreakVelocity") then
-            local ok, temp = pcall(function()
-                local v = Velocity_Asset:Clone()
-                v.Name = "BreakVelocity" -- IMPORTANT: match the name you check for
-                v.Parent = root
-                return v
-            end)
+            local v = Velocity_Asset:Clone()
+            v.Name = "BreakVelocity" -- IMPORTANT so your checks match
+            v.Parent = root
         end
     end
 
-    local speakerHum = getHum(speaker)
-    if speakerHum then speakerHum.Sit = true end
+    local hum = getHum(speaker)
+    if hum then hum.Sit = true end
 
-    -- Use Stepped so we move BEFORE physics resolves contacts
+    -- Stepped runs before physics, reduces fling vs Heartbeat
     headSit = RunService.Stepped:Connect(function()
-        local sChar = speaker.Character
-        local tChar = target.Character
-        local sRoot = sChar and getRoot(sChar)
+        local sHum = getHum(speaker)
+        local sRoot = getRootSafe(speaker)
         local tHead = getHead(target)
 
-        local hum = getHum(speaker)
-
         if target.Parent ~= Players
-            or not tChar
-            or not sChar
+            or not sHum
             or not sRoot
             or not tHead
-            or not hum
-            or hum.Sit ~= true
         then
             if headSit then headSit:Disconnect(); headSit = nil end
             if sRoot and sRoot:FindFirstChild("BreakVelocity") then
@@ -10417,9 +10428,12 @@ addcmd('headsit', {}, function(args, speaker)
             return
         end
 
+        -- Keep sitting (some games unset Sit automatically)
+        sHum.Sit = true
+
         ensureBreakVelocity(sRoot)
 
-        -- Sit on head (offset like their script)
+        -- Sit on head
         sRoot.CFrame = tHead.CFrame * CFrame.new(0, 2, 0)
 
         -- Kill fling energy every frame
@@ -10427,7 +10441,6 @@ addcmd('headsit', {}, function(args, speaker)
             sRoot.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
             sRoot.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
         else
-            -- fallback for older behavior
             sRoot.Velocity = Vector3.new(0, 0, 0)
             sRoot.RotVelocity = Vector3.new(0, 0, 0)
         end
