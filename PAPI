@@ -1,5 +1,5 @@
 {
   "Version": "2",
   "Announcement": "Next Update in a month or so.",
-  "Changelog": " Update v2\n\n  What's New:\n   • New UI designed\n   • Added support for food\n   • Added support for ice cream\n   • Added anti-cheat bypass\n   • Updated old drinks menu\n   • Fixed mouse positioning\n   • Added more options to settings\n   • Removed lag on the UI\n   • Updated Fisher\n\n  What's Next:\n   • Adding BullEvent support\n   • Adding Plushie support\n   • Extra Remote cheats"
+  "Changelog": " Update v2\n\n  What's New:\n   • New UI designed\n   • Added support for food\n   • Added support for ice cream\n   • Added BullEvent autoplay\n   • Updated old drinks menu\n   • Fixed mouse positioning\n   • Added more options to settings\n   • Removed lag on the UI\n   • Updated Fisher\n\n  What's Next:\n   • Adding Sushi support\n   • Adding Plushie support\n   • Extra Remote cheats"
 }
